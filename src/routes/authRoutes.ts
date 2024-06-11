@@ -33,4 +33,10 @@ router.post("/login",
   AuthController.login
 )
 
+router.post("/request-code",
+  body("email").isEmail().withMessage("E-main no valido"),
+  handleInputErrors,
+  AuthController.requestConfirmationCode
+)
+
 export default router;
