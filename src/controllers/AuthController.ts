@@ -131,4 +131,70 @@ export class AuthController {
       res.status(500).json({ error: "Hubo un error" });
     }
   };
+
+  static forgetPassword = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+
+      //TODO: USUARIO EXISTE
+      const user = await User.findOne({ email });
+      if (!user) {
+        const error = new Error("El usuario no esta registrado");
+        return res.status(404).json({ error: error.message });
+      }
+
+      //TODO: GENERAR EL TOKEN
+      const token = new Token();
+      token.token = generateToken();
+      token.user = user.id;
+      await token.save()
+
+      //TODO: ENVIAR EMAIL
+      AuthEmail.sendPasswordResetToken({
+        email: user.email,
+        name: user.name,
+        token: token.token,
+      });
+
+      res.send("Revisa tu email para instrucciones");
+    } catch (error) {
+      res.status(500).json({ error: "Hubo un error" });
+    }
+  };
+
+  static validateToken = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.body;
+      const tokenExist = await Token.findOne({ token });
+
+      if (!tokenExist) {
+        const error = new Error("Token no valido");
+        return res.status(404).json({ error: error.message });
+      }
+      res.send("Token valido, define tu nuevo password");
+    } catch (error) {
+      res.status(500).json({ error: "Hubo un error" });
+    }
+  };
+
+  static updatePasswordWithToken = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.params;
+      const { password}  = req.body
+      const tokenExist = await Token.findOne({ token });
+
+      if (!tokenExist) {
+        const error = new Error("Token no valido");
+        return res.status(404).json({ error: error.message });
+      }
+
+      const user = await User.findById(tokenExist.user)
+      user.password = await hashPassword(password)
+
+      await Promise.allSettled([user.save(), tokenExist.deleteOne()])
+      res.send("El password se modifico correctamente");
+    } catch (error) {
+      res.status(500).json({ error: "Hubo un error" });
+    }
+  };
 }
