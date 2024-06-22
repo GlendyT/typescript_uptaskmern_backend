@@ -52,7 +52,7 @@ export class TaskController {
   static deleteTask = async (req: Request, res: Response) => {
     try {
       req.project.tasks = req.project.tasks.filter(
-        (task) => task.toString() !== req.task.id.toString()
+        task => task.toString() !== req.task.id.toString()
       );
       await Promise.allSettled([req.task.deleteOne(), req.project.save()]);
       res.send("Tarea Eliminada correctamente");
