@@ -25,3 +25,4 @@ app.use("/api/projects", projectRoutes )
 
 export default app
 
+//instalar bcrypt otra vez
