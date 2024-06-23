@@ -9,6 +9,9 @@
     "build": "tsc",
     "start": "node ./dist/index.js"
   },
+  "engines": {
+    "node": ">= 21.6.1"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
