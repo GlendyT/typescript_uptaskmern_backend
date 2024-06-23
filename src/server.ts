@@ -25,3 +25,5 @@ app.use("/api/projects", projectRoutes )
 
 export default app
 
+
+//correr npm run build
